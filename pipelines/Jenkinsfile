@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+    environment {
+       projectName = 'challenge2'
+       gitBranch = 'dev'
+   }
     tools {
         maven 'maven'
     }
