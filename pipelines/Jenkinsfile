@@ -11,11 +11,8 @@ pipeline {
                 git url: "https://github.com/AaronDownward/aaron-challenge2.git", branch: "dev"
             }
             post {
-                success{
-                    slackSend(color: '#00FF00', message: "${currentBuild.displayName}'s successfully pulled from github")
-                }
                 failure{
-                    slackSend(color: '#FF0000', message: "${currentBuild.displayName}'s failed to pull from github.")
+                    slackSend(color: '#FF0000', message: "${projectName}' [${gitBranch}:${currentBuild.number}] has failed to pull project from github.")
                 }
             }
         }
@@ -25,6 +22,11 @@ pipeline {
                     sh "mvn package"
                 }
             }
+            post {
+                failure{
+                    slackSend(color: '#FF0000', message: "${projectName}' [${gitBranch}:${currentBuild.number}] has failed to build.")
+                }
+            }
         }
         stage("Sonar") {
             steps {
@@ -32,6 +34,11 @@ pipeline {
                     withSonarQubeEnv("SonarCloud") {
                         sh "mvn verify sonar:sonar -Dsonar.scanner.force-deprecated-java-version=true"
                     }
+                }
+            }
+            post {
+                failure{
+                    slackSend(color: '#FF0000', message: "${projectName}' [${gitBranch}:${currentBuild.number}] has failed to run sonar tests.")
                 }
             }
         }
@@ -49,6 +56,11 @@ pipeline {
                     }
                 }
             }
+            post {
+                failure{
+                    slackSend(color: '#FF0000', message: "${projectName}' [${gitBranch}:${currentBuild.number}] has failed to push image to docker hub.")
+                }
+            }
         }
         stage("Deploy to Testing") {
             steps {
@@ -57,6 +69,14 @@ pipeline {
                         sh 'kubectl apply -f .'
                         sh 'kubectl rollout restart deployment/simple-app -n build'
                     }
+                }
+            }
+            post {
+                success{
+                    slackSend(color: '#00FF00', message: "${projectName}' [${gitBranch}:${currentBuild.number}] successfully completed CI/CD pipeline.")
+                }
+                failure{
+                    slackSend(color: '#FF0000', message: "${projectName}' [${gitBranch}:${currentBuild.number}] has failed to deploy to test server.")
                 }
             }
         }
