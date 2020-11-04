@@ -50,7 +50,7 @@ pipeline {
                 script {
                     dir("maven-app") {
                         docker.withTool("docker") {
-                            repoId = "aarondownward/maven-app"
+                            repoId = "aarondownward/maven-app:${currentBuild.number}"
                             image = docker.build(repoId)
                             docker.withRegistry("https://registry.hub.docker.com", "dockerhub-cred") {
                                 image.push()
