@@ -9,7 +9,14 @@ pipeline {
         stage('Pull') {
             steps {
                 git url: "https://github.com/AaronDownward/aaron-challenge2.git", branch: "dev"
-                slackSend color: '#BADA55', message: 'Hello, World!'
+            }
+            post {
+                success{
+                    slackSend(color: '#00FF00', message: "${currentBuild.displayName}'s successfully pulled from github")
+                }
+                failure{
+                    slackSend(color: '#FF0000', message: "${currentBuild.displayName}'s failed to pull from github.")
+                }
             }
         }
         stage('Build') {
