@@ -17,7 +17,7 @@ spec:
         spec:
             containers:
             -   name: jenkins
-                image: aarondownward/challenge2jenkins
+                image: aarondownward/challenge2jenkins:latest
                 ports:
                 - containerPort: 8080
                 - containerPort: 50000
