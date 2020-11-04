@@ -9,6 +9,7 @@ pipeline {
         stage('Pull') {
             steps {
                 git url: "https://github.com/AaronDownward/aaron-challenge2.git", branch: "dev"
+                slackSend color: '#BADA55', message: 'Hello, World!'
             }
         }
         stage('Build') {
